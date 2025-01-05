@@ -10,7 +10,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /data/app-config/qbittorrent/config:/config
+      - /data/apps-data/qbittorrent/config:/config
       - /data/media/Downloads/torrents:/downloads
     ports:
       - '8080:8080'
@@ -24,8 +24,7 @@ services:
       - PGID=1000
       - TZ=America/Sao_Paulo
     volumes:
-      - /data/app-config/jellyfin/config:/config
-      - /data/media:/media
+      - /data/apps-data/jellyfin/config:/config
       - /data/media/tvshows:/data/tvshows
       - /data/media/movies:/data/movies
     ports:
