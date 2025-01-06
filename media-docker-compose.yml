@@ -15,7 +15,7 @@ services:
     ports:
       - '8080:8080'
       - '62609:62609'
-  
+
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
@@ -29,4 +29,114 @@ services:
       - /data/media/movies:/data/movies
     ports:
       - 8096:8096
+    restart: unless-stopped
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /data/apps-data/lidarr/config:/config
+      - /data/media/music:/music
+      - /data/media/Downloads/lidarr:/downloads
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
+  readarr:
+    container_name: readarr
+    image: ghcr.io/hotio/readarr
+    ports:
+      - "8787:8787"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /data/apps-data/readarr/config:/config
+      - /data/media/books:/data
+
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /data/apps-data/radarr/appdata/config:/config
+      - /data/media/Downloads/torrents:/downloads
+      - /data/media/radarr/movies:/movies
+      - /data/media/radarr/anime:/anime
+      - /data/media/movies:/library/movies
+    ports:
+      - '7878:7878'
+
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /data/apps-data/sonarr/appdata/config:/config
+      - /data/media/sonarr:/tv
+      - /data/media/tvshows:/library/tvshows
+      - /data/media/Downloads/torrents:/downloads
+    ports:
+      - '8989:8989'
+
+  prowlarr:
+    image: ghcr.io/hotio/prowlarr:latest
+    restart: unless-stopped
+    depends_on:
+      - flaresolverr
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /data/apps-data/prowlarr/config:/config
+    ports:
+      - '9696:9696'
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    volumes:
+      - /data/apps-data/flaresolverr/config:/config
+    ports:
+      - '8191:8191'
+  
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    restart: unless-stopped
+    environment:
+      - TZ=America/Sao_Paulo
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /data/media/Downloads/nzbget:/downloads
+      - /data/media/Downloads/nzbget/incomplete:/incomplete-downloads
+      - /data/apps-data/nzbget/config:/config
+    ports:
+      - '8081:8080'
+
+  lidatube:
+    image: thewicklowwolf/lidatube:latest
+    container_name: lidatube
+    volumes:
+      - /data/apps-data/lidatube/config:/lidatube/config
+      - /data/media/lidatube:/lidatube/downloads
+    ports:
+      - 5000:5000
     restart: unless-stopped
